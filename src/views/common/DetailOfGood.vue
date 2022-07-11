@@ -122,8 +122,8 @@ export default {
     };
   },
   methods: {
-    goToCart(){
-      this.$router.push('/cart');
+    goToCart() {
+      this.$router.push("/cart");
     },
     choose() {
       this.show = true;
@@ -148,20 +148,19 @@ export default {
       });
     },
     //提交订单
-    submitOrder(){
-      var allPrise=this.num*this.info.retail_price;
+    submitOrder() {
+      var allPrise = this.num * this.info.retail_price;
       submitActionApi({
-        allPrise:allPrise,//商品总价
-        goodsId:this.id//商品id
-      })
-      .then(res=>{
+        allPrise: allPrise, //商品总价
+        goodsId: this.id //商品id
+      }).then(res => {
         // console.log('提交订单',res);
-        if(res.data){
-           this.$router.push({
+        if (res.data) {
+          this.$router.push({
             path: "buynow"
           });
         }
-      })
+      });
     },
     popUp(str) {
       if (!this.show) {
@@ -187,7 +186,6 @@ export default {
           this.show = !this.show;
           this.isOperate = false;
           this.submitOrder();
-         
         }
       }
     },
@@ -211,12 +209,17 @@ export default {
     this.getDetailOfGood();
     this.getCarCount();
   },
-  watch:{
-    '$route'(newValue,oldValue){
-       this.id = this.$route.query.id;
-    this.getDetailOfGood();
-    this.getCarCount();
+  watch: {
+    $route(newValue, oldValue) {
+      this.id = this.$route.query.id;
+      this.getDetailOfGood();
+      this.getCarCount();
     }
+  },
+  beforeRouteLeave(to, from, next) {
+    from.meta.goodsId = this.id;
+    from.meta.scrollTop = document.documentElement.scrollTop;
+    next();
   }
 };
 </script>

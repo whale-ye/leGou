@@ -1,41 +1,46 @@
 <template>
   <div>
-    <!-- 30天退款 -->
-    <ul class="condition">
-      <li class="condition-item">20天无忧退款</li>
-      <li class="condition-item">48小时快速退款</li>
-      <li class="condition-item">满88元免邮券</li>
-    </ul>
-    <ul class="list">
-      <van-swipe-cell class="swiper-cell" v-for="item in cartList" :key="item.id">
-        <van-cell :border="false" />
-        <li class="item">
-          <input v-model="item.singleCheck" :id="item.id" type="checkbox" />
-          <label class="label" :for="item.id"></label>
-          <div class="center">
-            <img :src="item.list_pic_url" alt />
-            <div class="info">
-              <div class="desc">{{item.goods_name}}</div>
-              <div class="price">¥&nbsp;{{item.retail_price}}</div>
+    <div v-if="cartList.length">
+      <!-- 30天退款 -->
+      <ul class="condition">
+        <li class="condition-item">20天无忧退款</li>
+        <li class="condition-item">48小时快速退款</li>
+        <li class="condition-item">满88元免邮券</li>
+      </ul>
+      <ul class="list">
+        <van-swipe-cell class="swiper-cell" v-for="item in cartList" :key="item.id">
+          <van-cell :border="false" />
+          <li class="item">
+            <input v-model="item.singleCheck" :id="item.id" type="checkbox" />
+            <label class="label" :for="item.id"></label>
+            <div class="center">
+              <img :src="item.list_pic_url" alt />
+              <div class="info">
+                <div class="desc">{{item.goods_name}}</div>
+                <div class="price">¥&nbsp;{{item.retail_price}}</div>
+              </div>
             </div>
-          </div>
-          <div class="num">X{{item.number}}</div>
-        </li>
-        <template #right>
-          <van-button @click="deleteCart(item.id)" square type="danger" text="删除" />
-        </template>
-      </van-swipe-cell>
-    </ul>
-    <div class="pay">
-      <div class="choose-box">
-        <input v-model="isAllCheck" id="choose" type="checkbox" />
-        <label class="label" for="choose"></label>
-        <span>全选</span>
+            <div class="num">X{{item.number}}</div>
+          </li>
+          <template #right>
+            <van-button @click="deleteCart(item.id)" square type="danger" text="删除" />
+          </template>
+        </van-swipe-cell>
+      </ul>
+      <div class="pay">
+        <div class="choose-box">
+          <input v-model="isAllCheck" id="choose" type="checkbox" />
+          <label class="label" for="choose"></label>
+          <span>全选</span>
+        </div>
+        <div class="pay-box">
+          <div class="price">¥&nbsp;{{allInTo}}</div>
+          <div @click="submitOrder" class="pay-now">下单</div>
+        </div>
       </div>
-      <div class="pay-box">
-        <div class="price">¥&nbsp;{{allInTo}}</div>
-        <div @click="submitOrder" class="pay-now">下单</div>
-      </div>
+    </div>
+    <div v-else class="empty-cart">
+      当前购物车暂无商品,快去挑选喜欢的商品吧!
     </div>
   </div>
 </template>
@@ -46,7 +51,7 @@ import {
   deleteAction as deleteActionApi,
   submitAction as submitActionApi
 } from "@/api/good/index.js";
-
+import { Toast } from "vant";
 export default {
   name: "Cart",
   data() {
@@ -90,10 +95,16 @@ export default {
       var allPrise = this.allInTo;
       var goodsId = "";
       var chooseList = this.cartList.filter(item => item.singleCheck);
+      if (!chooseList.length) {
+        Toast("\n当前还没有选中商品,您必须选择商品才能购买哦!\n\n");
+        return;
+      }
       chooseList.forEach(item => {
         goodsId = goodsId + "," + item.goods_id;
       });
       goodsId = goodsId.slice(1);
+      console.log(goodsId);
+
       submitActionApi({
         allPrise: allPrise, //商品总价
         goodsId: goodsId //商品id
@@ -210,7 +221,14 @@ input:checked + label::after {
     }
   }
 }
-
+.empty-cart{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height:100vh;
+  
+}
 .list {
   // overflow: hidden;
   box-sizing: border-box;

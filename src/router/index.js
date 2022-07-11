@@ -114,11 +114,25 @@ const routes = [
 const router = new VueRouter({
   routes,
   scrollBehavior(to, from, savedPosition) {
-    return {
-      x: 0,
-      y: 0,
-      behavior: 'instant'
+    if (to.meta.scrollTop && to.meta.scrollTop > 0 && to.meta.goodsId == to.query.id) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve({
+            x: 0,
+            y: to.meta.scrollTop
+          })
+        }, 500);
+      })
+    } else if (savedPosition) {
+      return savedPosition
+    } else {
+      return {
+        x: 0,
+        y: 0,
+        behavior: 'instant'
+      }
     }
+
   }
 })
 
