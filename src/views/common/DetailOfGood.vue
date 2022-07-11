@@ -57,7 +57,7 @@
       <div @click="addStar" class="icon star">
         <van-icon :color="collected?'red':''" class="icon-icon" size="20" name="star-o" />
       </div>
-      <div class="icon car">
+      <div @click="goToCart" class="icon car">
         <van-badge :content="allnumber">
           <van-icon class="icon-icon" size="20" name="cart-o" />
         </van-badge>
@@ -122,6 +122,9 @@ export default {
     };
   },
   methods: {
+    goToCart(){
+      this.$router.push('/cart');
+    },
     choose() {
       this.show = true;
       this.isOperate = true;
@@ -207,6 +210,13 @@ export default {
     this.id = this.$route.query.id;
     this.getDetailOfGood();
     this.getCarCount();
+  },
+  watch:{
+    '$route'(newValue,oldValue){
+       this.id = this.$route.query.id;
+    this.getDetailOfGood();
+    this.getCarCount();
+    }
   }
 };
 </script>

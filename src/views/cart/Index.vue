@@ -7,18 +7,24 @@
       <li class="condition-item">满88元免邮券</li>
     </ul>
     <ul class="list">
-      <li class="item" v-for="item in cartList" :key="item.id">
-        <input v-model="item.singleCheck" :id="item.id" type="checkbox" />
-        <label class="label" :for="item.id"></label>
-        <div class="center">
-          <img :src="item.list_pic_url" alt />
-          <div class="info">
-            <div class="desc">{{item.goods_name}}</div>
-            <div class="price">¥&nbsp;{{item.retail_price}}</div>
+      <van-swipe-cell class="swiper-cell" v-for="item in cartList" :key="item.id">
+        <van-cell :border="false" />
+        <li class="item">
+          <input v-model="item.singleCheck" :id="item.id" type="checkbox" />
+          <label class="label" :for="item.id"></label>
+          <div class="center">
+            <img :src="item.list_pic_url" alt />
+            <div class="info">
+              <div class="desc">{{item.goods_name}}</div>
+              <div class="price">¥&nbsp;{{item.retail_price}}</div>
+            </div>
           </div>
-        </div>
-        <div class="num">X{{item.number}}</div>
-      </li>
+          <div class="num">X{{item.number}}</div>
+        </li>
+        <template #right>
+          <van-button @click="deleteCart(item.id)" square type="danger" text="删除" />
+        </template>
+      </van-swipe-cell>
     </ul>
     <div class="pay">
       <div class="choose-box">
@@ -73,6 +79,12 @@ export default {
     }
   },
   methods: {
+    //删除商品
+    deleteCart(id) {
+      deleteActionApi({ id }).then(res => {
+        this.getCarList();
+      });
+    },
     //提交订单
     submitOrder() {
       var allPrise = this.allInTo;
@@ -97,10 +109,10 @@ export default {
     //获取购物车列表
     getCarList() {
       cartListApi().then(res => {
-        this.beforeList = res.data;
-        this.beforeList.forEach(item => {
-          this.cartList.push(Object.assign({ singleCheck: false }, item));
+        res.data.forEach(el => {
+          el.singleCheck = false;
         });
+        this.cartList = res.data;
       });
     }
   },
@@ -111,6 +123,17 @@ export default {
 </script>
 
 <style lang="scss"  scoped>
+.swiper-cell {
+  // height: 96px;
+  padding-top: -0.73333rem 0;
+  border-bottom: 1px solid #ccc;
+}
+::v-deep .van-button {
+  margin-top: 10px;
+  height: 100%;
+
+  // height:96px;
+}
 input {
   display: block;
   width: 20px;
@@ -189,18 +212,17 @@ input:checked + label::after {
 }
 
 .list {
-  overflow: hidden;
+  // overflow: hidden;
   box-sizing: border-box;
   width: 100%;
-  padding: 0 15px 110px;
+  padding: 0 15px 0;
   background-color: #fff;
   .item {
     display: flex;
-    margin-top: 10px;
+    // margin-top: 10px;
     width: 100%;
-    height: 96px;
+    // height: 96px;
     align-items: center;
-    border-bottom: 1px solid #ccc;
     flex-wrap: nowrap;
     &:last-child {
       border: none;
